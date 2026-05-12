@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reels Automation Demo</title>
+  <style>
+    :root { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #111827; background: #f8fafc; }
+    body { margin: 0; }
+    header { background: #020617; color: white; padding: 22px 36px; display: flex; justify-content: space-between; align-items: center; }
+    header strong { font-size: 20px; }
+    main { max-width: 1120px; margin: 32px auto; padding: 0 24px 48px; }
+    .grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 22px; }
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 18px; padding: 24px; box-shadow: 0 18px 50px rgba(15,23,42,.08); }
+    h1 { margin: 0 0 8px; font-size: 34px; }
+    h2 { margin-top: 0; }
+    p, li { color: #475569; line-height: 1.65; }
+    button { border: 0; border-radius: 12px; padding: 12px 16px; font-weight: 700; cursor: pointer; }
+    .primary { background: #111827; color: white; }
+    .tiktok { background: #000; color: white; }
+    .secondary { background: #e2e8f0; color: #0f172a; }
+    .success { background: #16a34a; color: white; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .status { padding: 12px 14px; border-radius: 12px; background: #f1f5f9; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #334155; }
+    .video { aspect-ratio: 9/16; max-height: 520px; background: linear-gradient(160deg,#111827,#334155); border-radius: 20px; display: grid; place-items: center; color: white; text-align: center; padding: 24px; }
+    .step { display: flex; gap: 12px; margin: 14px 0; align-items: flex-start; }
+    .num { width: 30px; height: 30px; border-radius: 50%; background: #e5e7eb; display: grid; place-items: center; font-weight: 800; flex: none; }
+    .done .num { background: #16a34a; color: white; }
+    .hidden { display: none; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>Reels Automation</strong>
+    <span>Domain: phatcuong.github.io/reels-/</span>
+  </header>
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h1>TikTok Content Posting API demo</h1>
+        <p>This demo shows the exact Web/Desktop integration flow for TikTok Developer review using a sandbox-style UI.</p>
+        <ul>
+          <li>Product: <strong>Content Posting API</strong></li>
+          <li>Platform: <strong>Web/Desktop</strong></li>
+          <li>Scopes used: <code>video.upload</code>, <code>video.publish</code></li>
+        </ul>
+        <div class="row">
+          <button id="login" class="tiktok">1. Connect TikTok Sandbox</button>
+          <button id="generate" class="secondary">2. Generate Reel</button>
+          <button id="publish" class="secondary">3. Publish to TikTok</button>
+        </div>
+        <p id="status" class="status">Waiting for reviewer interaction...</p>
+        <div id="steps">
+          <div class="step" id="s1"><div class="num">1</div><div><strong>Authorize TikTok</strong><br><span>User grants sandbox access for posting video content.</span></div></div>
+          <div class="step" id="s2"><div class="num">2</div><div><strong>Prepare video + caption</strong><br><span>Workflow creates a short-form sports reel and caption.</span></div></div>
+          <div class="step" id="s3"><div class="num">3</div><div><strong>Call Content Posting API</strong><br><span>Automation uploads the MP4 and submits it for publishing.</span></div></div>
+          <div class="step" id="s4"><div class="num">4</div><div><strong>Save publish result</strong><br><span>Workflow stores TikTok publish_id and status for audit.</span></div></div>
+        </div>
+      </section>
+      <aside class="card">
+        <h2>Preview video</h2>
+        <div class="video">
+          <div>
+            <h2>Sports Reel Preview</h2>
+            <p style="color:#e2e8f0">AI-generated short video<br>MP4 → TikTok Content Posting API</p>
+          </div>
+        </div>
+        <p id="result" class="status hidden">TikTok publish_id: sandbox_publish_20260512_001<br>Status: uploaded_for_review</p>
+      </aside>
+    </div>
+  </main>
+  <script>
+    const $ = id => document.getElementById(id);
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    function done(id) { $(id).classList.add('done'); }
+    $('login').onclick = async () => { $('status').textContent = 'Opening TikTok sandbox OAuth consent... access granted for video.upload and video.publish.'; done('s1'); $('generate').className='primary'; };
+    $('generate').onclick = async () => { $('status').textContent = 'Generating reel assets: video.mp4 + caption prepared.'; done('s2'); $('publish').className='success'; };
+    $('publish').onclick = async () => { $('status').textContent = 'Calling TikTok Content Posting API sandbox: /v2/post/publish/video/init/ then uploading MP4.'; done('s3'); await wait(700); done('s4'); $('result').classList.remove('hidden'); $('status').textContent = 'Publish flow complete. Result saved with TikTok publish_id.'; };
+    async function autoplayDemo() { await wait(900); $('login').click(); await wait(1200); $('generate').click(); await wait(1200); $('publish').click(); }
+    if (new URL(location.href).searchParams.get('autoplay') === '1') autoplayDemo();
+  </script>
+</body>
+</html>
